@@ -93,6 +93,7 @@
         <input oninput="updateColor(16)" type="color" id="color16"><label for="color16">Color 16</label>
     </div>
     <input id="file-input" type="file">
+    <button>Redraw</button>
 </body>
 <style>
     canvas {
@@ -154,7 +155,7 @@
         h =  h.match(new RegExp('(.{'+h.length/3+'})', 'g'));
         for(var i=0; i<h.length; i++)
             h[i] = parseInt(h[i].length==1? h[i]+h[i]:h[i], 16); 
-        h[4] = 1;
+        h[4] = 255;
         return h;
     }   
     
@@ -233,7 +234,7 @@
             unis.u_palette1 = colorExtract(colors.slice(4, 8));
             unis.u_palette2 = colorExtract(colors.slice(8, 12));
             unis.u_palette3 = colorExtract(colors.slice(12, 16));
-            
+
             // Set rect for object to be rendered in
             atts.a_position = {numComponents: 2, data: new Float32Array(wgl.m3.setRectangle(0, 0, obj.width, obj.height)) };
             // Sets texture coord - NOTE THIS SHOULD BE CHANGED FOR ARGUMENTS LATER FOR SPRITESHEETS
