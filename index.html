@@ -31,7 +31,6 @@
             gl_FragColor =  texture2D(u_image, v_texCoord);
             
             float lumens = 0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b;
-            
             float distance0 = distance(lumens, u_luminosity[0][0]);
             float distance1 = distance(lumens, u_luminosity[0][1]);
             float distance2 = distance(lumens, u_luminosity[0][2]);
@@ -111,6 +110,13 @@
         padding: 0;
         background-color: transparent;
     }
+    input[type="color"]+label{
+        display: none;
+    }
+    input[type="color"]#bgColor+label{
+        display: block;
+    }
+
 </style>
 
 <script>
@@ -129,7 +135,7 @@
         updateColor(i+1);
     }
     
-    function calcLuminosity(r, g, b) { return (0.2126 * r) + (0.7152 * g) + (0.0722 * b); }
+    function calcLuminosity(r, g, b) { return (0.2126 * r / 255) + (0.7152 * g/255) + (0.0722 * b/255); }
     function clear(gl){ gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); }
     function resize(gl){ 
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height); 
@@ -148,6 +154,7 @@
         h =  h.match(new RegExp('(.{'+h.length/3+'})', 'g'));
         for(var i=0; i<h.length; i++)
             h[i] = parseInt(h[i].length==1? h[i]+h[i]:h[i], 16); 
+        h[4] = 1;
         return h;
     }   
     
@@ -159,6 +166,16 @@
         let newColor = hexToRGB(document.getElementById("color" + colorNumber).value);
         colors[index] = newColor;
         luminosities[index] = calcLuminosity(newColor[0], newColor[1], newColor[2]);
+    }
+
+    function colorExtract(colors){
+        let result = [];
+        for (let c in colors) {
+            for (let att in colors[c]) {
+                result.push(colors[c][att]/255);
+            }
+        }
+        return result;
     }
     
     function drawImage(imageArg) {
@@ -212,12 +229,11 @@
             unis.u_matrix = wgl.m3.translate(matrix2, -obj.width/2, -obj.height/2);
             
             unis.u_luminosity = luminosities;
-            unis.u_palette0 = colors.slice(0, 4);
-            unis.u_palette1 = colors.slice(4, 8);
-            unis.u_palette2 = colors.slice(8, 12);
-            unis.u_palette3 = colors.slice(12, 16);
+            unis.u_palette0 = colorExtract(colors.slice(0, 4));
+            unis.u_palette1 = colorExtract(colors.slice(4, 8));
+            unis.u_palette2 = colorExtract(colors.slice(8, 12));
+            unis.u_palette3 = colorExtract(colors.slice(12, 16));
             
-
             // Set rect for object to be rendered in
             atts.a_position = {numComponents: 2, data: new Float32Array(wgl.m3.setRectangle(0, 0, obj.width, obj.height)) };
             // Sets texture coord - NOTE THIS SHOULD BE CHANGED FOR ARGUMENTS LATER FOR SPRITESHEETS
