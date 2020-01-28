@@ -73,7 +73,8 @@
 <body>
     <canvas id="canvas" width="500" height="500"></canvas>
     <div id="color-controls">
-        <input oninput="updateColor(0)" type="color" id="bgColor"><label for="bgColor">Background Color</label>
+        <button id="redraw-button" onclick="drawImage()">Redraw</button>
+        <br/>
         <input oninput="updateColor(1)" type="color" id="color1"><label for="color1">Color 1</label>
         <input oninput="updateColor(2)" type="color" id="color2"><label for="color2">Color 2</label>
         <input oninput="updateColor(3)" type="color" id="color3"><label for="color3">Color 3</label>
@@ -82,6 +83,7 @@
         <input oninput="updateColor(6)" type="color" id="color6"><label for="color6">Color 6</label>
         <input oninput="updateColor(7)" type="color" id="color7"><label for="color7">Color 7</label>
         <input oninput="updateColor(8)" type="color" id="color8"><label for="color8">Color 8</label>
+        <br/>
         <input oninput="updateColor(9)" type="color" id="color9"><label for="color9">Color 9</label>
         <input oninput="updateColor(10)" type="color" id="color10"><label for="color10">Color 10</label>
         <input oninput="updateColor(11)" type="color" id="color11"><label for="color11">Color 11</label>
@@ -92,13 +94,18 @@
         <input oninput="updateColor(16)" type="color" id="color16"><label for="color16">Color 16</label>
     </div>
     <input id="file-input" type="file">
-    <button>Redraw</button>
 </body>
 <style>
+    body {
+        text-align: center;
+    }
     canvas {
         height: 400px;
         width: 400px;
         background: grey;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
     }
     #file-input {
         background: lightgrey;
@@ -115,6 +122,8 @@
     }
     input[type="color"]#bgColor+label{
         display: block;
+    }
+    #redraw-button {
     }
 
 </style>

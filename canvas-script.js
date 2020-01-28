@@ -1,12 +1,11 @@
+// todo - style, allow typing in hex input for colors, sensible default palette
 
 var canvas = document.getElementById("canvas");
 var colors = [];
 var luminosities = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
-var backgroundColor = [1, 1, 1, 1];
 var gl = canvas.getContext("webgl", {antialias: false, premultipliedAlpha: true });
-function randColor(){
-    return [Math.floor(Math.random() * Math.floor(255)),Math.floor(Math.random() * Math.floor(255)),Math.floor(Math.random() * Math.floor(255))];
-}
+var scale = 8;
+var uploadedImage = "";
 
 for (let i=0; i<16; i++) {
     colors[i] = randColor();
@@ -14,21 +13,20 @@ for (let i=0; i<16; i++) {
     updateColor(i+1);
 }
 
+// util functions
+function randColor(){
+    return [Math.floor(Math.random() * 255),Math.floor(Math.random() * 255),Math.floor(Math.random() * 255)];
+}
+
 function calcLuminosity(r, g, b) { return (0.2126 * r / 255) + (0.7152 * g/255) + (0.0722 * b/255); }
-function clear(gl){ gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); }
-function resize(gl){ 
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height); 
-    var scale = 2;
-    canvas.width  = canvas.clientWidth ;
-    canvas.height = canvas.clientHeight ;
-};
+
 
 function rgb2hex(red, green, blue) {
     var rgb = blue | (green << 8) | (red << 16);
     return '#' + (0x1000000 + rgb).toString(16).slice(1)
 }
 
-function hexToRGB(hexColor){
+function hexToRGBA(hexColor){
     var h = hexColor.replace('#', '');
     h =  h.match(new RegExp('(.{'+h.length/3+'})', 'g'));
     for(var i=0; i<h.length; i++)
@@ -36,16 +34,6 @@ function hexToRGB(hexColor){
     h[4] = 255;
     return h;
 }   
-
-function updateColor(colorNumber) {
-    var index = parseInt(colorNumber) - 1;
-    if (colorNumber === 0) {
-        backgroundColor = 1;
-    }
-    let newColor = hexToRGB(document.getElementById("color" + colorNumber).value);
-    colors[index] = newColor;
-    luminosities[index] = calcLuminosity(newColor[0], newColor[1], newColor[2]);
-}
 
 function colorExtract(colors){
     let result = [];
@@ -57,25 +45,58 @@ function colorExtract(colors){
     return result;
 }
 
-function drawImage(imageArg) {
-    if (!gl) { return; }
+// ui updates 
+
+function updateColor(colorNumber) {
+    var index = parseInt(colorNumber) - 1;
+    let newColor = hexToRGBA(document.getElementById("color" + colorNumber).value);
+    colors[index] = newColor;
+    luminosities[index] = calcLuminosity(newColor[0], newColor[1], newColor[2]);
+}
+
+function handleImage(e){
+    var reader = new FileReader();
+    reader.onload = function(event){
+        var img = new Image();
+        img.onload = function(){
+            uploadedImage = img;
+            drawImage();
+        }
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(e.target.files[0]);     
+}
+
+// webgl 
+function clear(gl){ gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); }
+
+function resize(gl){ 
+    canvas.width  = canvas.clientWidth / scale;
+    canvas.height = canvas.clientHeight / scale;
+    gl.viewport(0, 0, gl.canvas.width , gl.canvas.height ); 
+};
+
+function drawImage() {
+    if (!gl || (uploadedImage === "")) { return; }
+    canvas.style.height = uploadedImage.height + "px";
+    canvas.style.width = uploadedImage.width + "px";
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
     gl.enable(gl.BLEND)
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    gl.clearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
+    gl.clearColor(0, 0, 0, 0);
     
-    var program = wgl.shadersToProgram(gl, document.getElementById("vshader2d").text, document.getElementById("fgshader2d").text);        
-    var setters = wgl.createSetters(gl, program);
-    var canvasImages = {
+    let program = wgl.shadersToProgram(gl, document.getElementById("vshader2d").text, document.getElementById("fgshader2d").text);        
+    let setters = wgl.createSetters(gl, program);
+    let canvasImages = {
         uploaded: {
-            img: imageArg,
+            img: uploadedImage,
             ctx: "", 
             canvas: "",
             texture: ""
         }
     }
     wgl.loadCanvasImages(gl, canvasImages);
-    var objects = [{
+    let objects = [{
       scale:[1, 1],
       translation: [0, 0],
       rotation: 0,
@@ -130,18 +151,10 @@ function drawImage(imageArg) {
         gl.bindTexture(gl.TEXTURE_2D, obj.texture.texture);
         gl.drawArrays(obj.primitive, obj.offset, obj.count);
     }
+
+    canvas.style.height = (uploadedImage.height / scale)  + "px";
+    canvas.style.width = (uploadedImage.width / scale)  + "px";
 }
 
 document.getElementById("file-input").onchange = handleImage;
 
-function handleImage(e){
-    var reader = new FileReader();
-    reader.onload = function(event){
-        var img = new Image();
-        img.onload = function(){
-            drawImage(img);
-        }
-        img.src = event.target.result;
-    }
-    reader.readAsDataURL(e.target.files[0]);     
-}
