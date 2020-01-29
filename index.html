@@ -76,24 +76,40 @@
         <button id="redraw-button" onclick="drawImage()">Redraw</button>
         <br/>
         <input oninput="updateColor(1)" type="color" id="color1"><label for="color1">Color 1</label>
+        <input type="text" id="color1-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(2)" type="color" id="color2"><label for="color2">Color 2</label>
+        <input type="text" id="color2-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(3)" type="color" id="color3"><label for="color3">Color 3</label>
+        <input type="text" id="color3-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(4)" type="color" id="color4"><label for="color4">Color 4</label>
+        <input type="text" id="color4-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(5)" type="color" id="color5"><label for="color5">Color 5</label>
+        <input type="text" id="color5-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(6)" type="color" id="color6"><label for="color6">Color 6</label>
+        <input type="text" id="color6-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(7)" type="color" id="color7"><label for="color7">Color 7</label>
+        <input type="text" id="color7-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(8)" type="color" id="color8"><label for="color8">Color 8</label>
+        <input type="text" id="color8-text" minlength="6" maxlength="6" size="8">
         <br/>
         <input oninput="updateColor(9)" type="color" id="color9"><label for="color9">Color 9</label>
+        <input type="text" id="color9-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(10)" type="color" id="color10"><label for="color10">Color 10</label>
+        <input type="text" id="color10-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(11)" type="color" id="color11"><label for="color11">Color 11</label>
+        <input type="text" id="color11-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(12)" type="color" id="color12"><label for="color12">Color 12</label>
+        <input type="text" id="color12-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(13)" type="color" id="color13"><label for="color13">Color 13</label>
+        <input type="text" id="color13-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(14)" type="color" id="color14"><label for="color14">Color 14</label>
+        <input type="text" id="color14-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(15)" type="color" id="color15"><label for="color15">Color 15</label>
+        <input type="text" id="color15-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(16)" type="color" id="color16"><label for="color16">Color 16</label>
+        <input type="text" id="color16-text" minlength="6" maxlength="6" size="8">
+        <input id="file-input" type="file">
     </div>
-    <input id="file-input" type="file">
 </body>
 <style>
     body {
@@ -109,8 +125,13 @@
     }
     #file-input {
         background: lightgrey;
-        min-height: 400px;
-        min-width: 400px;
+grid-row-start: 2;
+
+grid-row-end: 11;
+
+grid-column-start: 5;
+
+grid-column-end: 6;
     }
     input[type="color"] {
         border: 0;
@@ -124,8 +145,69 @@
         display: block;
     }
     #redraw-button {
+        grid-column-end: 7;
+        grid-column-start: 1;
+    }
+    #color-controls {
+        display: grid;
+        grid-template-columns: 25% 25% 25% 25%;
+    }
+    #color1-text, 
+    #color3-text, 
+    #color5-text, 
+    #color7-text, 
+    #color9-text, 
+    #color11-text, 
+    #color13-text, 
+    #color15-text {
+        grid-column-start: 2;
+    }
+    #color2-text, 
+    #color4-text, 
+    #color6-text, 
+    #color8-text, 
+    #color10-text, 
+    #color12-text, 
+    #color14-text, 
+    #color16-text {
+        grid-column-start: 4;
+    }
+    #color1, 
+    #color3, 
+    #color5, 
+    #color7, 
+    #color9, 
+    #color11, 
+    #color13, 
+    #color15 {
+        grid-column-start: 1;
+        justify-self: end;
+    }
+    #color2, 
+    #color4, 
+    #color6, 
+    #color8, 
+    #color10, 
+    #color12, 
+    #color14, 
+    #color16 {
+        grid-column-start: 3;
+        justify-self: end;
     }
 
+input[type="text"] {
+  width: 100px;
+  padding: 0;
+  border-radius: 0px;
+  margin: 0;
+  border: 1px solid black;
+}
+#color-controls {
+
+    display: grid;
+    grid-template-columns: 10% 10% 10% 10% 30%;
+    grid-gap: 10px;
+    }
 </style>
 <footer>
     <script type="text/javascript" src="./webglutils.js"></script>
