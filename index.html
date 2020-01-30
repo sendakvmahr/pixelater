@@ -76,38 +76,37 @@
         <button id="redraw-button" onclick="drawImage()">Redraw</button>
         <br/>
         <input oninput="updateColor(1)" type="color" id="color1"><label for="color1">Color 1</label>
-        <input type="text" id="color1-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(1)" type="text" id="color1-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(2)" type="color" id="color2"><label for="color2">Color 2</label>
-        <input type="text" id="color2-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(2)" type="text" id="color2-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(3)" type="color" id="color3"><label for="color3">Color 3</label>
-        <input type="text" id="color3-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(3)" type="text" id="color3-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(4)" type="color" id="color4"><label for="color4">Color 4</label>
-        <input type="text" id="color4-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(4)" type="text" id="color4-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(5)" type="color" id="color5"><label for="color5">Color 5</label>
-        <input type="text" id="color5-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(5)" type="text" id="color5-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(6)" type="color" id="color6"><label for="color6">Color 6</label>
-        <input type="text" id="color6-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(6)" type="text" id="color6-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(7)" type="color" id="color7"><label for="color7">Color 7</label>
-        <input type="text" id="color7-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(7)" type="text" id="color7-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(8)" type="color" id="color8"><label for="color8">Color 8</label>
-        <input type="text" id="color8-text" minlength="6" maxlength="6" size="8">
-        <br/>
+        <input onchange="updateColor(8)" type="text" id="color8-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(9)" type="color" id="color9"><label for="color9">Color 9</label>
-        <input type="text" id="color9-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(9)" type="text" id="color9-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(10)" type="color" id="color10"><label for="color10">Color 10</label>
-        <input type="text" id="color10-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(10)" type="text" id="color10-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(11)" type="color" id="color11"><label for="color11">Color 11</label>
-        <input type="text" id="color11-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(11)" type="text" id="color11-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(12)" type="color" id="color12"><label for="color12">Color 12</label>
-        <input type="text" id="color12-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(12)" type="text" id="color12-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(13)" type="color" id="color13"><label for="color13">Color 13</label>
-        <input type="text" id="color13-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(13)" type="text" id="color13-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(14)" type="color" id="color14"><label for="color14">Color 14</label>
-        <input type="text" id="color14-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(14)" type="text" id="color14-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(15)" type="color" id="color15"><label for="color15">Color 15</label>
-        <input type="text" id="color15-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(15)" type="text" id="color15-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(16)" type="color" id="color16"><label for="color16">Color 16</label>
-        <input type="text" id="color16-text" minlength="6" maxlength="6" size="8">
+        <input onchange="updateColor(16)" type="text" id="color16-text" minlength="6" maxlength="6" size="8">
         <input id="file-input" type="file">
     </div>
 </body>
@@ -131,7 +130,7 @@ grid-row-end: 11;
 
 grid-column-start: 5;
 
-grid-column-end: 6;
+grid-column-end: 6;d
     }
     input[type="color"] {
         border: 0;
@@ -195,18 +194,16 @@ grid-column-end: 6;
         justify-self: end;
     }
 
-input[type="text"] {
-  width: 100px;
-  padding: 0;
-  border-radius: 0px;
-  margin: 0;
-  border: 1px solid black;
-}
-#color-controls {
-
-    display: grid;
-    grid-template-columns: 10% 10% 10% 10% 30%;
-    grid-gap: 10px;
+    input[type="text"] {
+        padding: 0;
+        border-radius: 0px;
+        margin: 0;
+        border: 1px solid black;
+    }
+    #color-controls {
+        display: grid;
+        grid-template-columns: 10% 10% 10% 10% 30%;
+        grid-gap: 10px;
     }
 </style>
 <footer>

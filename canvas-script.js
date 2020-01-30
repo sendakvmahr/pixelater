@@ -8,7 +8,7 @@ var scale = 8;
 var uploadedImage = "";
 
 for (let i=0; i<16; i++) {
-    colors[i] = randColor();
+    colors[i] = [0, 0, 0];
     document.getElementById("color" + (i+1)).value = rgb2hex(colors[i][0], colors[i][1], colors[i][2])
     updateColor(i+1);
 }
@@ -23,7 +23,7 @@ function calcLuminosity(r, g, b) { return (0.2126 * r / 255) + (0.7152 * g/255) 
 
 function rgb2hex(red, green, blue) {
     var rgb = blue | (green << 8) | (red << 16);
-    return '#' + (0x1000000 + rgb).toString(16).slice(1)
+    return (0x1000000 + rgb).toString(16).slice(1)
 }
 
 function hexToRGBA(hexColor){
@@ -48,10 +48,21 @@ function colorExtract(colors){
 // ui updates 
 
 function updateColor(colorNumber) {
-    var index = parseInt(colorNumber) - 1;
-    let newColor = hexToRGBA(document.getElementById("color" + colorNumber).value);
-    colors[index] = newColor;
+    let index = parseInt(colorNumber);
+    let changeText = event === undefined || event.type === "input";
+    let changeInput = event === undefined || event.type === "change";
+    let newColor = event === undefined ? "000000" : 
+        (event.type === "input" ?  hexToRGBA(document.getElementById("color" + colorNumber).value) : 
+        hexToRGBA(document.getElementById("color" + colorNumber + "-text").value));
+    colors[index] = rgb2hex(newColor);
     luminosities[index] = calcLuminosity(newColor[0], newColor[1], newColor[2]);
+
+    if (changeText) {
+        document.getElementById("color" + colorNumber + "-text").value = rgb2hex(newColor[0], newColor[1], newColor[2]);
+    } 
+    if (changeInput) {
+        document.getElementById("color" + colorNumber).value = "#" + rgb2hex(newColor[0], newColor[1], newColor[2]);
+    }
 }
 
 function handleImage(e){
