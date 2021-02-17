@@ -2,13 +2,13 @@
 
 var canvas = document.getElementById("canvas");
 var colors = [];
-var luminosities = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+var luminosities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 var gl = canvas.getContext("webgl", {antialias: false, premultipliedAlpha: true });
-var scale = 8;
+var scale = 2;
 var uploadedImage = "";
 
 for (let i=0; i<16; i++) {
-    colors[i] = [0, 0, 0];
+    colors[i] = [0, 0, 0,0];
     document.getElementById("color" + (i+1)).value = rgb2hex(colors[i][0], colors[i][1], colors[i][2])
     updateColor(i+1);
 }
@@ -42,6 +42,10 @@ function colorExtract(colors){
             result.push(colors[c][att]/255);
         }
     }
+    result[3] = 1;
+    result[7] = 1;
+    result[11] = 1;
+    result[15] = 1;
     return result;
 }
 
@@ -54,8 +58,9 @@ function updateColor(colorNumber) {
     let newColor = event === undefined ? "000000" : 
         (event.type === "input" ?  hexToRGBA(document.getElementById("color" + colorNumber).value) : 
         hexToRGBA(document.getElementById("color" + colorNumber + "-text").value));
-    colors[index] = rgb2hex(newColor);
-    luminosities[index] = calcLuminosity(newColor[0], newColor[1], newColor[2]);
+
+    colors[index-1] = [newColor[0], newColor[1], newColor[2], 255];
+    luminosities[index-1] = calcLuminosity(newColor[0], newColor[1], newColor[2]);
 
     if (changeText) {
         document.getElementById("color" + colorNumber + "-text").value = rgb2hex(newColor[0], newColor[1], newColor[2]);
@@ -144,6 +149,7 @@ function drawImage() {
         unis.u_palette1 = colorExtract(colors.slice(4, 8));
         unis.u_palette2 = colorExtract(colors.slice(8, 12));
         unis.u_palette3 = colorExtract(colors.slice(12, 16));
+
 
         // Set rect for object to be rendered in
         atts.a_position = {numComponents: 2, data: new Float32Array(wgl.m3.setRectangle(0, 0, obj.width, obj.height)) };
