@@ -3,7 +3,9 @@
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
-    <script id="vshader2d" type="vshader">
+
+    <!-- just renders a texture -->
+    <script id="vshader2d" type="x-shader/x-vertex">
         // with texture
         uniform mat3 u_matrix;
         attribute vec2 a_position;
@@ -14,7 +16,9 @@
             v_texCoord = a_texCoord;
         }
     </script>
-    <script id="fgshader2d" type="fgshader">
+
+    <!-- maps to color palette -->
+    <script id="fgshader2d" type="x-shader/x-fragment">
         // with texture
         precision mediump float;
         uniform sampler2D u_image;
@@ -73,9 +77,14 @@
 
         }
     </script>
+
 </head>
 <body>
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <div id="canvas-container">
+        <canvas id="canvas-pass-1" width="500" height="500"></canvas> <!-- Map to solid color chunks-->
+        <canvas id="canvas-pass-2" width="500" height="500"></canvas> <!-- Line detection, color inside of the lines with transparencey-->
+        <canvas id="canvas-pass-3" width="500" height="500"></canvas> <!-- Map to colors (and see how far you can get filling stuff in the lines -->
+    </div>
     <div id="color-controls">
         <button id="redraw-button" onclick="drawImage()">Redraw</button>
         <br/>
@@ -115,6 +124,9 @@
     </div>
 </body>
 <style>
+    #canvas-pass-2, #canvas-pass-3 { /* Not yet implemented */
+        display: none;
+    }
     body {
         text-align: center;
     }
@@ -125,16 +137,22 @@
         image-rendering: pixelated;
         image-rendering: -moz-crisp-edges;
         image-rendering: crisp-edges;
+        position: absolute;
+        left:0;
+        right: 0;
+        margin: auto;
+    }
+    #canvas-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
     }
     #file-input {
         background: lightgrey;
-grid-row-start: 2;
-
-grid-row-end: 11;
-
-grid-column-start: 5;
-
-grid-column-end: 6;d
+        grid-row-start: 2;
+        grid-row-end: 11;
+        grid-column-start: 5;
+        grid-column-end: 6;
     }
     input[type="color"] {
         border: 0;
@@ -211,7 +229,9 @@ grid-column-end: 6;d
     }
 </style>
 <footer>
-    <script type="text/javascript" src="./webglutils.js"></script>
+    <script type="text/javascript" src="./webgl-utils.js"></script>
+    <script type="text/javascript" src="./m3.js"></script>
+    <script type="text/javascript" src="./utils.js"></script>
     <script type="text/javascript" src="./canvas-script.js"></script>
 </footer>
 </html>
