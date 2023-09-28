@@ -4,7 +4,7 @@ var canvas = document.getElementById("canvas-pass-1");
 var colors = [];
 var luminosities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 var gl = canvas.getContext("webgl", {antialias: false, premultipliedAlpha: true });
-var scale = 2;
+var scale = 5;
 var uploadedImage = "";
 
 var presetPalettes = {
@@ -49,6 +49,9 @@ function updateColor(colorNumber) {
     } 
     if (changeInput) {
         document.getElementById("color" + colorNumber).value = "#" + utils.rgb2hex(newColor[0], newColor[1], newColor[2]);
+    }
+    if (uploadedImage) {
+        drawImage();
     }
 }
 
@@ -165,7 +168,13 @@ function drawImage() {
         gl.bindTexture(gl.TEXTURE_2D, obj.texture.texture);
         gl.drawArrays(obj.primitive, obj.offset, obj.count);
     }
-    resizeAll((uploadedImage.width / scale), (uploadedImage.height / scale))
+
+    let maxCanvasWidth = Math.round(window.innerWidth / 3);
+    if (uploadedImage.width <= maxCanvasWidth) {
+        resizeAll((uploadedImage.width), (uploadedImage.height));
+    } else {
+        resizeAll(maxCanvasWidth, (Math.round((maxCanvasWidth * uploadedImage.height)/uploadedImage.width)));
+    }
 }
 
 document.getElementById("file-input").onchange = handleImage;
