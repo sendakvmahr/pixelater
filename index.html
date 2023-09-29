@@ -24,18 +24,19 @@
         uniform sampler2D u_image;
         uniform vec2 u_textureSize;
         varying vec2 v_texCoord;
-        
+
+        uniform float scale;
         uniform mat4 u_luminosity;
         uniform mat4 u_palette0;
         uniform mat4 u_palette1;
-        uniform mat4 u_palette2;
-        uniform mat4 u_palette3;
 
         void main() {
             vec2 onePixel = vec2(1.0, 1.0) / u_textureSize;
-            gl_FragColor =  texture2D(u_image, v_texCoord);
+            vec2 v_texCoordOffset = vec2(v_texCoord[0], v_texCoord[1] + float(onePixel[1] * 5.0));
+            gl_FragColor =  texture2D(u_image, v_texCoordOffset);
             
             float lumens = 0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b;
+
             float distance0 = distance(lumens, u_luminosity[0][0]);
             float distance1 = distance(lumens, u_luminosity[0][1]);
             float distance2 = distance(lumens, u_luminosity[0][2]);
@@ -44,14 +45,6 @@
             float distance5 = distance(lumens, u_luminosity[1][1]);
             float distance6 = distance(lumens, u_luminosity[1][2]);
             float distance7 = distance(lumens, u_luminosity[1][3]);
-            float distance8 = distance(lumens, u_luminosity[2][0]);
-            float distance9 = distance(lumens, u_luminosity[2][1]);
-            float distance10 = distance(lumens, u_luminosity[2][2]);
-            float distance11 = distance(lumens, u_luminosity[2][3]);
-            float distance12 = distance(lumens, u_luminosity[3][0]);
-            float distance13 = distance(lumens, u_luminosity[3][1]);
-            float distance14 = distance(lumens, u_luminosity[3][2]);
-            float distance15 = distance(lumens, u_luminosity[3][3]);
             
             float currentDistance = distance0;
             gl_FragColor = u_palette0[0];
@@ -65,23 +58,110 @@
             if (distance6 < currentDistance) { currentDistance = distance6; gl_FragColor = u_palette1[2];}
             if (distance7 < currentDistance) { currentDistance = distance7; gl_FragColor = u_palette1[3];}
 
-            if (distance8 < currentDistance) { currentDistance = distance8; gl_FragColor = u_palette2[0];}
-            if (distance9 < currentDistance) { currentDistance = distance9; gl_FragColor = u_palette2[1];}
-            if (distance10 < currentDistance) { currentDistance = distance10; gl_FragColor = u_palette2[2];}
-            if (distance11 < currentDistance) { currentDistance = distance11; gl_FragColor = u_palette2[3];}
+        }
+    </script>
+ 
+    <!-- snaps to black or white -->
+    <script id="fgshader2db" type="x-shader/x-fragment">
+        // with texture
+        precision mediump float;
+        uniform sampler2D u_image;
+        uniform vec2 u_textureSize;
+        varying vec2 v_texCoord;
 
-            if (distance12 < currentDistance) { currentDistance = distance12; gl_FragColor = u_palette3[0];}
-            if (distance13 < currentDistance) { currentDistance = distance13; gl_FragColor = u_palette3[1];}
-            if (distance14 < currentDistance) { currentDistance = distance14; gl_FragColor = u_palette3[2];}
-            if (distance15 < currentDistance) { currentDistance = distance15; gl_FragColor = u_palette3[3];}
+        uniform float u_scale;
+        uniform mat4 u_luminosity;
+        uniform mat4 u_palette0;
+        uniform mat4 u_palette1;
+        uniform mat4 u_palette2;
+        uniform mat4 u_palette3;
+
+        void main() {
+            vec2 onePixel = vec2(1.0, 1.0) / u_textureSize;
+            float offset = float(onePixel[1] * u_scale);
+
+            mat3 pixelSample = mat3(
+                vec3(1.0, 1.0, 1.0),
+                vec3(1.0, 1.0, 1.0),
+                vec3(1.0, 1.0, 1.0)
+            );
+
+            for (int i = 0 ; i < 9; i++) {
+                vec2 v_texCoordOffset = vec2(v_texCoord[0], v_texCoord[1]);
+                if (i == 0){
+                    v_texCoordOffset[0] -= offset;
+                    v_texCoordOffset[1] -= offset;
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[0][0] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                } else if (i == 1) {
+                    v_texCoordOffset[1] -= offset;
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[0][1] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                } else if (i == 2) {
+                    v_texCoordOffset[0] += offset;
+                    v_texCoordOffset[1] -= offset;
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[0][2] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                } else if (i == 3) {
+                    v_texCoordOffset[0] -= offset;
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[1][0] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                } else if (i == 4) {
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[1][1] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                } else if (i == 5) {
+                    v_texCoordOffset[0] += offset;
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[1][2] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                } else if (i == 6) {
+                    v_texCoordOffset[0] -= offset;
+                    v_texCoordOffset[1] += offset;
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[2][0] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                } else if (i == 7) {
+                    v_texCoordOffset[1] += offset;
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[2][1] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                } else {
+                    v_texCoordOffset[0] += offset;
+                    v_texCoordOffset[1] += offset;
+                    gl_FragColor = texture2D(u_image, v_texCoordOffset);
+                    pixelSample[2][2] = float(0.2126 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b);
+                }
+            }
+
+            /* better for color chunk kinds */
+            /* Default luminosity is [1][1] */
+            /*
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 0.0);
+            float threshold = 0.4;
+            if (distance(pixelSample[1][1], pixelSample[0][1]) > threshold || distance(pixelSample[1][1], pixelSample[2][1]) > threshold || distance(pixelSample[1][1], pixelSample[1][0]) > threshold || distance(pixelSample[1][2], pixelSample[2][1]) > threshold) {
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                if (distance(pixelSample[1][1], pixelSample[0][0]) > threshold || distance(pixelSample[1][1], pixelSample[1][2]) > threshold || distance(pixelSample[1][1], pixelSample[2][0]) > threshold || distance(pixelSample[2][2], pixelSample[2][1]) > threshold) {
+                    gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0);
+                }
+            }
+            */
+            /* better for lines */
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 0.0);
+            float threshold = .5;
+            if (pixelSample[1][1] < threshold) {
+                gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                if (pixelSample[0][1] < threshold  && pixelSample[2][1] < threshold && pixelSample[1][0] < threshold  && pixelSample[1][2] < threshold) {
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+                    if (pixelSample[0][0] < threshold && pixelSample[1][2] < threshold && pixelSample[2][0] < threshold && pixelSample[2][2] < threshold) {
+                        gl_FragColor = vec4(0.8, 0.8, 0.8, 1.0);
+                    }
+                }
+            }
 
         }
     </script>
-
 </head>
 <body>
     <div id="canvas-container">
-        <canvas id="canvas-pass-1" width="500" height="500"></canvas> <!-- Map to solid color chunks-->
+        <canvas id="compare"></canvas>
+        <canvas id="canvas-pass-1" style="opacity:100%;" width="500" height="500"></canvas> <!-- Map to solid color chunks-->
         <canvas id="canvas-pass-2" width="500" height="500"></canvas> <!-- Line detection, color inside of the lines with transparencey-->
         <canvas id="canvas-pass-3" width="500" height="500"></canvas> <!-- Map to colors (and see how far you can get filling stuff in the lines -->
     </div>
@@ -104,27 +184,18 @@
         <input onchange="updateColor(7)" type="text" id="color7-text" minlength="6" maxlength="6" size="8">
         <input oninput="updateColor(8)" type="color" id="color8"><label for="color8">Color 8</label>
         <input onchange="updateColor(8)" type="text" id="color8-text" minlength="6" maxlength="6" size="8">
-        <input oninput="updateColor(9)" type="color" id="color9"><label for="color9">Color 9</label>
-        <input onchange="updateColor(9)" type="text" id="color9-text" minlength="6" maxlength="6" size="8">
-        <input oninput="updateColor(10)" type="color" id="color10"><label for="color10">Color 10</label>
-        <input onchange="updateColor(10)" type="text" id="color10-text" minlength="6" maxlength="6" size="8">
-        <input oninput="updateColor(11)" type="color" id="color11"><label for="color11">Color 11</label>
-        <input onchange="updateColor(11)" type="text" id="color11-text" minlength="6" maxlength="6" size="8">
-        <input oninput="updateColor(12)" type="color" id="color12"><label for="color12">Color 12</label>
-        <input onchange="updateColor(12)" type="text" id="color12-text" minlength="6" maxlength="6" size="8">
-        <input oninput="updateColor(13)" type="color" id="color13"><label for="color13">Color 13</label>
-        <input onchange="updateColor(13)" type="text" id="color13-text" minlength="6" maxlength="6" size="8">
-        <input oninput="updateColor(14)" type="color" id="color14"><label for="color14">Color 14</label>
-        <input onchange="updateColor(14)" type="text" id="color14-text" minlength="6" maxlength="6" size="8">
-        <input oninput="updateColor(15)" type="color" id="color15"><label for="color15">Color 15</label>
-        <input onchange="updateColor(15)" type="text" id="color15-text" minlength="6" maxlength="6" size="8">
-        <input oninput="updateColor(16)" type="color" id="color16"><label for="color16">Color 16</label>
-        <input onchange="updateColor(16)" type="text" id="color16-text" minlength="6" maxlength="6" size="8">
         <input id="file-input" type="file">
+
+        <div>
+            <input onchange="updateChecks()" type="checkbox" id="saving-check" name="saving-check">
+            <label for="saving-check">Saving scaling</label>
+            <input onchange="updateChecks()" type="checkbox" id="saving-check" name="saving-check">
+            <label for="saving-check">Use Color Chunks for edges (assume little to no lines)</label>
+        </div>
     </div>
 </body>
 <style>
-    #canvas-pass-2, #canvas-pass-3 { /* Not yet implemented */
+    #compare, #canvas-pass-3 { /* Not yet implemented */
         display: none;
     }
     body {
@@ -133,11 +204,10 @@
     canvas {
         height: 400px;
         width: 400px;
-        background: grey;
         image-rendering: pixelated;
         image-rendering: -moz-crisp-edges;
         image-rendering: crisp-edges;
-        position: absolute;
+        //position: absolute;
         left:0;
         right: 0;
         margin: auto;
